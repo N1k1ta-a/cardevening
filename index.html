@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Для тебя 💖</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #ffd6e8 0%, #ffb3d9 50%, #ffc2e0 100%);
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .bg-heart {
+    position: absolute;
+    font-size: 24px;
+    opacity: 0.4;
+    animation: floatUp linear infinite;
+    pointer-events: none;
+  }
+  @keyframes floatUp {
+    0%   { transform: translateY(100vh) scale(0.5); opacity: 0; }
+    10%  { opacity: 0.6; }
+    100% { transform: translateY(-10vh) scale(1.2); opacity: 0; }
+  }
+
+  .card {
+    background: rgba(255, 255, 255, 0.93);
+    backdrop-filter: blur(10px);
+    border-radius: 30px;
+    padding: 40px 30px;
+    max-width: 500px;
+    width: 90%;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(255, 105, 180, 0.4);
+    position: relative;
+    z-index: 10;
+    animation: cardIn 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+    max-height: 95vh;
+    overflow-y: auto;
+  }
+  @keyframes cardIn {
+    from { transform: scale(0.7); opacity: 0; }
+    to   { transform: scale(1); opacity: 1; }
+  }
+
+  h1 { color: #e91e63; font-size: 26px; margin-bottom: 10px; }
+  .subtitle { color: #888; font-size: 15px; margin-bottom: 22px; }
+
+  .game-area {
+    position: relative;
+    height: 280px;
+    background: linear-gradient(180deg, #fff0f5 0%, #ffe0ec 100%);
+    border-radius: 20px;
+    overflow: hidden;
+    border: 2px dashed #ffb3d9;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+
+  .falling {
+    position: absolute;
+    font-size: 34px;
+    line-height: 1;
+    cursor: pointer;
+    pointer-events: auto;
+    padding: 6px;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  .falling.cat {
+    font-size: 42px;
+    animation: sway 1.2s ease-in-out infinite alternate;
+  }
+  @keyframes sway {
+    from { transform: rotate(-10deg); }
+    to   { transform: rotate(10deg); }
+  }
+
+  .score-badge {
+    position: absolute;
+    top: 10px;
+    left: 12px;
+    background: rgba(255,255,255,0.92);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: bold;
+    color: #e91e63;
+    z-index: 5;
+    pointer-events: none;
+  }
+
+  .hint {
+    margin-top: 16px;
+    color: #a06080;
+    font-size: 14px;
+    height: 20px;
+    transition: opacity 0.3s;
+  }
+
+  .pop {
+    position: absolute;
+    font-size: 20px;
+    color: #e91e63;
+    font-weight: bold;
+    pointer-events: none;
+    animation: popUp 0.8s ease-out forwards;
+    z-index: 6;
+    white-space: nowrap;
+  }
+  @keyframes popUp {
+    0%   { transform: translateY(0) scale(0.6); opacity: 1; }
+    100% { transform: translateY(-55px) scale(1.4); opacity: 0; }
+  }
+
+  .final { display: none; animation: fadeIn 1s ease; }
+  .final.show { display: block; }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(15px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .final h2 { color: #e91e63; font-size: 23px; margin-bottom: 15px; }
+  .final p { color: #555; font-size: 15px; line-height: 1.7; margin-bottom: 12px; }
+
+  .final .soft {
+    background: #fff5f9;
+    border-left: 4px solid #ffb3d9;
+    border-radius: 12px;
+    padding: 14px 16px;
+    text-align: left;
+    color: #6b4a5a;
+    font-size: 15px;
+    line-height: 1.7;
+    margin: 14px 0;
+  }
+
+  .big-heart {
+    font-size: 58px;
+    animation: beat 1s infinite;
+    display: inline-block;
+    margin: 6px 0;
+  }
+  @keyframes beat {
+    0%, 100% { transform: scale(1); }
+    25%      { transform: scale(1.2); }
+    50%      { transform: scale(1); }
+    75%      { transform: scale(1.15); }
+  }
+
+  .btn {
+    margin-top: 15px;
+    background: linear-gradient(135deg, #ff6ba6, #e91e63);
+    color: white;
+    border: none;
+    padding: 12px 28px;
+    border-radius: 25px;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 6px 20px rgba(233, 30, 99, 0.4);
+  }
+  .btn:hover {
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 10px 25px rgba(233, 30, 99, 0.5);
+  }
+</style>
+</head>
+<body>
+
+<div class="card">
+  <div id="intro">
+    <h1>Привет, солнышко ☀️</h1>
+    <p class="subtitle">Помоги мне собрать немного любви 💕</p>
+
+    <div class="game-area" id="game">
+      <div class="score-badge">Собрано: <span id="score">0</span>/15</div>
+    </div>
+
+    <div class="hint" id="hint">Лови сердечки 💗 цветочки 🌸 и котика 🐱 (+3)</div>
+  </div>
+
+  <div class="final" id="final">
+    <span class="big-heart">💖</span>
+    <h2>Ты — моё самое любимое чудо</h2>
+
+    <p>
+      Даже если сегодня день не задался помни, что где-то есть человек,
+      который думает о тебе и улыбается прямо сейчас.
+    </p>
+
+    <div class="soft">
+      Если хочется погрустить то можно. Правда можно. 🌙<br><br>
+      Не нужно держать всё в себе и не нужно быть холодной со мной.
+      Я рядом не для того, чтобы требовать улыбку, а чтобы просто быть.
+      <br><br>
+      Мне кажется, что я сделал что-то не так, я переживаю
+      об этом больше, чем ты думаешь. Скажи мне, пожалуйста. Я не хочу
+      додумывать и бояться, что всё сломалось.
+    </div>
+
+    <p>
+      Твоя улыбка делает этот мир ярче. Но и твоя грусть тоже часть тебя,
+      и я принимаю её всю 🌷
+    </p>
+
+    <button class="btn" onclick="location.reload()">Сыграть ещё раз 🔄</button>
+  </div>
+</div>
+
+<script>
+  // ---------- Фоновые сердечки ----------
+  const heartsBg = ['💗', '💖', '💕', '🌸', '💞', '✨', '🌷'];
+  function spawnBgHeart() {
+    const h = document.createElement('div');
+    h.className = 'bg-heart';
+    h.textContent = heartsBg[Math.floor(Math.random() * heartsBg.length)];
+    h.style.left = Math.random() * 100 + 'vw';
+    h.style.animationDuration = (6 + Math.random() * 6) + 's';
+    h.style.fontSize = (16 + Math.random() * 20) + 'px';
+    document.body.appendChild(h);
+    setTimeout(() => h.remove(), 12000);
+  }
+  setInterval(spawnBgHeart, 700);
+
+  // ---------- Игра ----------
+  const game = document.getElementById('game');
+  const scoreEl = document.getElementById('score');
+  const hint = document.getElementById('hint');
+  const final = document.getElementById('final');
+  const intro = document.getElementById('intro');
+
+  const GOAL = 15;
+  let score = 0;
+  let gameActive = true;
+  let spawnCount = 0;
+
+  const hearts = ['💗', '💖', '💕', '💘', '💝', '❤️'];
+  const flowers = ['🌸', '🌷', '🌺', '🌻', '🌼'];
+
+  function spawnItem() {
+    if (!gameActive) return;
+
+    const el = document.createElement('div');
+    el.className = 'falling';
+
+    let type, symbol, points;
+    spawnCount++;
+
+    // 🐱 КОТИК ПАДАЕТ ЧАЩЕ:
+    // каждый 2-й спавн — котик с шансом 85%,
+    // иначе обычный шанс 25%
+    let isCat = false;
+    if (spawnCount % 2 === 0) {
+      isCat = Math.random() < 0.85;
+    } else {
+      isCat = Math.random() < 0.25;
+    }
+
+    // защита от двух котиков подряд
+    if (isCat && el.dataset && window._lastWasCat) {
+      isCat = false;
+    }
+    window._lastWasCat = isCat;
+
+    if (isCat) {
+      type = 'cat';
+      symbol = '🐱';
+      points = 3;
+      el.classList.add('cat');
+    } else if (Math.random() < 0.45) {
+      type = 'flower';
+      symbol = flowers[Math.floor(Math.random() * flowers.length)];
+      points = 1;
+    } else {
+      type = 'heart';
+      symbol = hearts[Math.floor(Math.random() * hearts.length)];
+      points = 1;
+    }
+
+    el.textContent = symbol;
+
+    const maxX = game.clientWidth - 55;
+    el.style.left = Math.max(0, Math.random() * maxX) + 'px';
+    el.style.top = '-55px';
+    game.appendChild(el);
+
+    let pos = -55;
+    const speed = type === 'cat'
+      ? 1.0 + Math.random() * 0.8
+      : 1.5 + Math.random() * 1.5;
+
+    const fall = setInterval(() => {
+      if (el.dataset.caught === '1') {
+        clearInterval(fall);
+        return;
+      }
+      pos += speed;
+      el.style.top = pos + 'px';
+
+      if (pos > game.clientHeight) {
+        clearInterval(fall);
+        el.remove();
+      }
+    }, 16);
+
+    const catchItem = (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      if (el.dataset.caught === '1' || !gameActive) return;
+
+      el.dataset.caught = '1';
+      clearInterval(fall);
+
+      const pop = document.createElement('div');
+      pop.className = 'pop';
+      if (type === 'cat') {
+        pop.textContent = '+3 🐱💕';
+        pop.style.color = '#ff9800';
+      } else if (type === 'flower') {
+        pop.textContent = '+1 🌸';
+        pop.style.color = '#e91e63';
+      } else {
+        pop.textContent = '+1 💖';
+        pop.style.color = '#e91e63';
+      }
+      pop.style.left = el.style.left;
+      pop.style.top = el.style.top;
+      game.appendChild(pop);
+      setTimeout(() => pop.remove(), 800);
+
+      el.style.transition = 'transform 0.2s, opacity 0.2s';
+      el.style.transform = 'scale(2)';
+      el.style.opacity = '0';
+      setTimeout(() => el.remove(), 200);
+
+      addScore(points, type);
+    };
+
+    el.addEventListener('pointerdown', catchItem);
+    el.addEventListener('touchstart', catchItem, { passive: false });
+    el.addEventListener('click', catchItem);
+  }
+
+  function addScore(points, type) {
+    score += points;
+    scoreEl.textContent = score;
+
+    if (type === 'cat') {
+      hint.textContent = 'Котик пойман! Ты лучшая 🐱💕';
+    } else if (score >= 3 && score < 6) {
+      hint.textContent = 'Отлично! Продолжай 💫';
+    } else if (score >= 6 && score < 10) {
+      hint.textContent = 'Ты просто волшебница ✨';
+    } else if (score >= 10 && score < GOAL) {
+      hint.textContent = 'Ещё чуть-чуть! 🥰';
+    }
+
+    if (score >= GOAL) {
+      gameActive = false;
+      hint.textContent = '';
+      setTimeout(showFinal, 500);
+    }
+  }
+
+  function showFinal() {
+    intro.style.display = 'none';
+    final.classList.add('show');
+  }
+
+  let spawnDelay = 700;
+  function loopSpawn() {
+    if (!gameActive) return;
+    spawnItem();
+    spawnDelay = Math.max(380, 700 - score * 15);
+    setTimeout(loopSpawn, spawnDelay);
+  }
+  loopSpawn();
+
+  const watchEnd = setInterval(() => {
+    if (!gameActive) {
+      clearInterval(watchEnd);
+      game.querySelectorAll('.falling').forEach(h => h.remove());
+    }
+  }, 200);
+</script>
+
+</body>
+</html>
